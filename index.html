@@ -155,6 +155,16 @@
       font-size:16px;
       transition: background-color 0.2s;
     }
+    
+    /* THIS IS THE ONLY CHANGE I HAVE MADE */
+    .tool > summary .meta {
+      margin-left: auto; /* Pushes the element to the right */
+      margin-right: 16px; /* Adds space between it and the '+' icon */
+      color: var(--muted); /* Makes the color dimmer */
+      font-weight: 400; /* Makes it normal weight, not bold */
+      font-size: 14px; /* Makes it slightly smaller */
+    }
+    
     .tool > summary:hover {
         background-color: rgba(125, 211, 252, 0.03);
     }
@@ -280,7 +290,7 @@
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nslookup -type=MX domain.com</code><div class="cmd-desc">Get mail servers (Windows).</div></div></div>
         </div></details>
         
-        <details class="tool"><summary>Nmap — Host Discovery</summary><div class="content">
+        <details class="tool"><summary>Nmap <span class="meta">Host Discovery</span></summary><div class="content">
           <div class="tool-purpose">Tool purpose: Discover live hosts on a network before port scanning.</div>
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -PR -sn 192.168.1.0/24</code><div class="cmd-desc">ARP Scan (Best for LAN, fastest & most reliable).</div></div></div>
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -PE -sn 192.168.1.0/24</code><div class="cmd-desc">ICMP Echo (Normal ping, works if not blocked).</div></div></div>
@@ -295,7 +305,7 @@
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">-R</code><div class="cmd-desc">Force reverse-DNS lookup.</div></div></div>
         </div></details>
         
-        <details class="tool"><summary>Nmap — Basic Port Scans</summary><div class="content">
+        <details class="tool"><summary>Nmap <span class="meta">Basic Port Scans</span></summary><div class="content">
           <div class="tool-purpose">Tool purpose: Identify open TCP/UDP ports and running services on a live host.</div>
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">nmap -sT &lt;target&gt;</code><div class="cmd-desc">TCP Connect Scan (no root, basic open port check).</div></div></div>
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -sS &lt;target&gt;</code><div class="cmd-desc">TCP SYN Scan (half-open, stealthy, needs sudo).</div></div></div>
@@ -307,7 +317,7 @@
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -sU -p 10000-65535 &lt;target&gt;</code><div class="cmd-desc">To scan a UDP range beyond 1000.</div></div></div>
         </div></details>
         
-        <details class="tool"><summary>Nmap — Version / OS / Scripts</summary><div class="content">
+        <details class="tool"><summary>Nmap <span class="meta">Version / OS / Scripts</span></summary><div class="content">
           <div class="tool-purpose">Tool purpose: Identify service versions, operating system, and run NSE scripts on a target.</div>
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -sS -sV -p &lt;ports&gt; &lt;target&gt;</code><div class="cmd-desc">Service/version detection.</div></div></div>
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -O &lt;target&gt;</code><div class="cmd-desc">OS detection (needs privileges).</div></div></div>
@@ -320,7 +330,7 @@
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">-T4</code><div class="cmd-desc">Uses an aggressive timing template to scan faster.</div></div></div>
         </div></details>
         
-        <details class="tool"><summary>Nmap — Performance & Discovery</summary><div class="content">
+        <details class="tool"><summary>Nmap <span class="meta">Performance & Discovery</span></summary><div class="content">
           <div class="tool-purpose">Tool purpose: Adjust scan speed, timing, and discovery options to optimize performance or bypass filters.</div>
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -T4 &lt;target&gt;</code><div class="cmd-desc">Faster timing for labs.</div></div></div>
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -T0 &lt;target&gt;</code><div class="cmd-desc">Paranoid timing (slow).</div></div></div>
@@ -329,7 +339,7 @@
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap --top-ports 100 &lt;target&gt;</code><div class="cmd-desc">Scan top 100 common ports.</div></div></div>
         </div></details>
         
-        <details class="tool"><summary>Nmap — Output</summary><div class="content">
+        <details class="tool"><summary>Nmap <span class="meta">Output</span></summary><div class="content">
           <div class="tool-purpose">Tool purpose: Save scan results in different formats for reporting, analysis, or future reference.</div>
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -oN output.txt &lt;target&gt;</code><div class="cmd-desc">Normal text output.</div></div></div>
           <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo nmap -oA recon/target &lt;target&gt;</code><div class="cmd-desc">Save all formats (Nmap, XML, grepable).</div></div></div>
@@ -679,7 +689,6 @@ function showPhase(id){
   }
   phaseBtns.forEach(b=> b.classList.toggle('active', b.dataset.phase===id));
   document.getElementById('search').value='';
-  // The problematic line "filter('');" has been removed from here.
 }
 phaseBtns.forEach(b=> b.addEventListener('click', ()=> showPhase(b.dataset.phase)));
 showPhase('recon');
