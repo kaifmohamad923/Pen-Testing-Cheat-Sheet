@@ -481,7 +481,7 @@
         <details class="tool"><summary>Gobuster <span class="meta">Directory/DNS bruteforcing</span></summary><div class="content">
             <div class="tool-purpose">Tool purpose: Use wordlists to discover hidden directories, files, DNS subdomains, and vhosts.</div>
             <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster dir -u http://example.com -w wordlist.txt -o dirs.txt</code><div class="cmd-desc">Directory brute-force using wordlists.</div></div></div>
-            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster dns -d example.com -w subdomains.txt -o dns.txt</code><div class="cmd-desc">Subdomain enumeration via DNS bruteforce.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster dns -d example.com -w /usr/share/wordlists/directory-list-2.3-medium.txt -o dns.txt</code><div class="cmd-desc">Subdomain enumeration via DNS bruteforce.</div></div></div>
             <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster vhost -u example.com -w vhosts.txt -o vhosts.txt</code><div class="cmd-desc">Virtual host discovery against target.</div></div></div>
         </div></details>
         
