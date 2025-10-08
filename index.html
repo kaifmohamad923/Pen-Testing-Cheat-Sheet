@@ -3,9 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pen Testing Cheat Sheet</title>
-  <link rel="icon" type="image/png" href="templetes/favicon.png">
-
+  <title>Pen Testing Cheat Sheet — Final</title>
   <style>
     /* --- Brighter Cyan Theme --- */
     :root{
@@ -76,9 +74,10 @@
         text-shadow: 0 0 15px var(--glow);
     }
     .subtitle{color:var(--muted);font-size:14px; margin-top: 4px;}
-    .phases{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:16px 0}
+    .phases{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:16px 0}
     
     .phase-btn{
+      position: relative; /* Add positioning context */
       background:var(--glass);
       backdrop-filter: blur(25px); /* Enhanced blur */
       border:1px solid rgba(255,255,255,0.04);
@@ -88,6 +87,10 @@
       cursor:pointer;
       user-select:none;
       transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 30px; /* Add padding to accommodate the number */
     }
     .phase-btn:hover{
       transform: translateY(-4px);
@@ -97,6 +100,27 @@
     .phase-btn.active{
       outline: 2px solid var(--accent);
       box-shadow: 0 0 25px var(--glow);
+    }
+    .phase-btn .number {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 20px; /* Smaller width */
+      height: 20px; /* Smaller height */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom-right-radius: 12px; /* Creates the quarter circle effect */
+      background: var(--accent);
+      color: var(--bg2);
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 0 10px var(--glow);
+      backdrop-filter: blur(5px); /* Added blur effect */
+      /* No border */
+    }
+    .phase-btn[data-phase="others"] .number {
+        display: none; /* Hide number on "Others" button */
     }
 
     main{
@@ -257,7 +281,7 @@
   <div class="wrap">
     <header>
       <div>
-        <h1>🛡️ Pen Testing Cheat Sheet (Under Development)</h1>
+        <h1>🛡️ Pen Testing Cheat Sheet</h1>
         <div class="subtitle">A comprehensive cheat sheet covering the 6 phases of penetration testing.</div>
       </div>
       <div class="controls">
@@ -267,12 +291,13 @@
     </header>
 
     <div class="phases" role="list">
-      <div class="phase-btn" data-phase="recon">1. Reconnaissance</div>
-      <div class="phase-btn" data-phase="enum">2. Enumeration</div>
-      <div class="phase-btn" data-phase="exploit">3. Exploitation</div>
-      <div class="phase-btn" data-phase="post">4. Post-Exploitation</div>
-      <div class="phase-btn" data-phase="persist">5. Persistence & Tracks</div>
-      <div class="phase-btn" data-phase="report">6. Reporting</div>
+      <div class="phase-btn" data-phase="recon"><div class="number">1</div>Reconnaissance</div>
+      <div class="phase-btn" data-phase="enum"><div class="number">2</div>Enumeration</div>
+      <div class="phase-btn" data-phase="exploit"><div class="number">3</div>Exploitation</div>
+      <div class="phase-btn" data-phase="post"><div class="number">4</div>Post-Exploitation</div>
+      <div class="phase-btn" data-phase="persist"><div class="number">5</div>Persistence & Tracks</div>
+      <div class="phase-btn" data-phase="report"><div class="number">6</div>Reporting</div>
+      <div class="phase-btn" data-phase="others">Others</div>
     </div>
 
     <main id="main">
@@ -480,9 +505,10 @@
         
         <details class="tool"><summary>Gobuster <span class="meta">Directory/DNS bruteforcing</span></summary><div class="content">
             <div class="tool-purpose">Tool purpose: Use wordlists to discover hidden directories, files, DNS subdomains, and vhosts.</div>
-            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster dir -u http://example.com -w wordlist.txt -o dirs.txt</code><div class="cmd-desc">Directory brute-force using wordlists.</div></div></div>
-            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster dns -d example.com -w /usr/share/wordlists/directory-list-2.3-medium.txt -o dns.txt</code><div class="cmd-desc">Subdomain enumeration via DNS bruteforce.</div></div></div>
-            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster vhost -u example.com -w vhosts.txt -o vhosts.txt</code><div class="cmd-desc">Virtual host discovery against target.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster dir -u http://team.thm/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+ -o dirs.txt</code><div class="cmd-desc">Directory brute-force using wordlists.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster dns -d example.com -w subdomains.txt -o dns.txt</code><div class="cmd-desc">Subdomain enumeration via DNS bruteforce.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">gobuster vhost -u example.com -w /usr/share/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt -o vhosts.txt</code><div class="cmd-desc">Virtual host discovery against target.</div></div></div>
         </div></details>
         
         <details class="tool"><summary>Dirb <span class="meta">Web content scanner</span></summary><div class="content">
@@ -687,6 +713,60 @@
         </div></details>
       </section>
 
+      <section class="tool-list" id="others" style="display:none">
+        <div class="section-purpose">Purpose: A collection of other useful tools and techniques outside the main pentesting phases.</div>
+        
+        <h3 class="attack-title" style="margin-top: 0;">Hash Cracking</h3>
+        <details class="tool"><summary>John the Ripper (JTR) <span class="meta">Password cracker</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A fast, flexible, and versatile password cracker that supports many hash types.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">john --wordlist=rockyou.txt hashes.txt</code><div class="cmd-desc">Cracks hashes from a file using a wordlist.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">john --show hashes.txt</code><div class="cmd-desc">Shows successfully cracked passwords from a session.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">unshadow passwd shadow > unshadowed.txt</code><div class="cmd-desc">Merges /etc/passwd and /etc/shadow for cracking.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Hashcat <span class="meta">GPU-accelerated cracker</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: The world's fastest password cracker, using GPU acceleration to crack hashes from a file.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">hashcat -m 0 -a 0 hashes.txt rockyou.txt</code><div class="cmd-desc">Cracks MD5 hashes (-m 0) using a wordlist (-a 0).</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">hashcat -m 1000 -a 3 hashes.txt ?a?a?a?a</code><div class="cmd-desc">Cracks NTLM hashes (-m 1000) with a brute-force attack (-a 3).</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">hashcat --show hashes.txt</code><div class="cmd-desc">Shows cracked passwords from the session.</div></div></div>
+        </div></details>
+
+        <h3 class="attack-title">Wi-Fi Cracking</h3>
+        <details class="tool"><summary>Aircrack-ng <span class="meta">WPA/WPA2 password recovery</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A suite of tools for assessing Wi-Fi network security, including packet sniffing and cracking.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">airmon-ng check kill</code><div class="cmd-desc">Kills processes that interfere with monitor mode.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">airmon-ng start wlan0</code><div class="cmd-desc">Puts wireless adapter into monitor mode.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">airodump-ng -c &lt;channel&gt; --bssid &lt;bssid&gt; -w capture wlan0mon</code><div class="cmd-desc">Captures handshake for a specific Wi-Fi network.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">aireplay-ng --deauth 5 -a &lt;bssid&gt; wlan0mon</code><div class="cmd-desc">Deauthenticates a client to force a new handshake capture.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">aircrack-ng -w wordlist.txt capture-01.cap</code><div class="cmd-desc">Cracks the captured handshake using a wordlist.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Reaver <span class="meta">WPS brute-force attack</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: Bruteforces the Wi-Fi Protected Setup (WPS) PIN to retrieve the WPA/WPA2 passphrase.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">reaver -i wlan0mon -b &lt;bssid&gt; -vv</code><div class="cmd-desc">Initiates a WPS brute-force attack on a target BSSID.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">reaver -i wlan0mon -b &lt;bssid&gt; -p 12345678</code><div class="cmd-desc">Tests a specific WPS PIN.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Wifite <span class="meta">Automated Wi-Fi attacks</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: An automated tool that simplifies multiple Wi-Fi attack methods, including WPA, WEP, and WPS.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">wifite</code><div class="cmd-desc">Starts Wifite and automatically finds and attacks WPA/WPS networks.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">wifite --wps --wpa</code><div class="cmd-desc">Only targets networks with WPS enabled or WPA handshakes.</div></div></div>
+        </div></details>
+
+        <h3 class="attack-title">Password Spraying</h3>
+        <details class="tool"><summary>Medusa <span class="meta">Password spraying tool</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A brute-force password spraying tool that can be used to test for a few common passwords against many accounts.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">medusa -U users.txt -p 'Spring2024!' -h 10.0.0.1 -M ssh</code><div class="cmd-desc">Sprays a single password against a list of users on an SSH service.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">medusa -u user1 -P pass_file.txt -h 10.0.0.1 -M http</code><div class="cmd-desc">Brute-forces a single user with a list of passwords via HTTP.</div></div></div>
+        </div></details>
+        
+        <details class="tool"><summary>Kerbrute <span class="meta">Kerberos brute force</span></summary><div class="content">
+            <div class="tool-purpose">Tool purpose: A tool for brute-forcing and password spraying Kerberos pre-authentication in Active Directory.</div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">kerbrute userenum --dc domain.com -d &lt;ip&gt; users.txt</code><div class="cmd-desc">Enumerates valid usernames against a domain controller.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">kerbrute passwordspray --dc domain.com -d &lt;ip&gt; users.txt 'Welcome1!'</code><div class="cmd-desc">Sprays a single password against a list of usernames.</div></div></div>
+        </div></details>
+      </section>
+
     </main>
     
    <footer>
@@ -700,6 +780,35 @@
   </div>
 
 <script>
+// --- Fuzzy Search Implementation ---
+function levenshteinDistance(a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+  
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // substitution
+          matrix[i][j - 1] + 1,     // insertion
+          matrix[i - 1][j] + 1      // deletion
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
 // Phase behavior
 const phaseBtns = document.querySelectorAll('.phase-btn');
 const sections = {
@@ -709,6 +818,7 @@ const sections = {
   post: document.getElementById('post'),
   persist: document.getElementById('persist'),
   report: document.getElementById('report'),
+  others: document.getElementById('others'),
 };
 function showPhase(id){
   for(const k in sections){
@@ -722,7 +832,7 @@ function showPhase(id){
 phaseBtns.forEach(b=> b.addEventListener('click', ()=> showPhase(b.dataset.phase)));
 showPhase('recon');
 
-// Search filter
+// Search filter with fuzzy logic
 const search = document.getElementById('search');
 const clear = document.getElementById('clear');
 function filter(q){
@@ -733,12 +843,30 @@ function filter(q){
   } else if (!document.querySelector('.phase-btn.active')) {
     document.querySelector('.phase-btn[data-phase="recon"]').classList.add('active');
   }
-
-  Object.values(sections).forEach(sec=>{
+  
+  Object.values(sections).forEach(sec => {
     let secHasVisibleItems = false;
-    sec.querySelectorAll('details').forEach(d=>{
-      const text = (d.innerText||'').toLowerCase();
-      const isMatch = !ql || text.includes(ql);
+    sec.querySelectorAll('details').forEach(d => {
+      const toolName = d.querySelector('summary').innerText.toLowerCase();
+      const textContent = d.innerText.toLowerCase();
+      
+      let isMatch = false;
+
+      // Check for exact substring match first
+      if (textContent.includes(ql)) {
+          isMatch = true;
+      } else {
+          // Then check for fuzzy match against the tool name and full text content
+          // Adjust threshold based on query length for better accuracy
+          const toolNameThreshold = Math.floor(ql.length / 4) + 1;
+          const textContentThreshold = Math.floor(ql.length / 3) + 1;
+          
+          if (levenshteinDistance(ql, toolName) <= toolNameThreshold ||
+              levenshteinDistance(ql, textContent) <= textContentThreshold) {
+              isMatch = true;
+          }
+      }
+
       d.style.display = isMatch ? 'block' : 'none';
       if (isMatch) secHasVisibleItems = true;
     });
@@ -791,4 +919,3 @@ document.addEventListener('click', e=>{
 </script>
 </body>
 </html>
-
