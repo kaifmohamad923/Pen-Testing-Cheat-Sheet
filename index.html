@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-MGZSBX2TR9"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MGZSBX2TR9"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -147,7 +146,7 @@ backdrop-filter: blur(5px);
       box-shadow: 0 25px 50px rgba(0,0,0,0.6); /* Darker shadow */
     }
 
-     .controls{display:flex;gap:8px;align-items:center;max-width:480px}
+      .controls{display:flex;gap:8px;align-items:center;max-width:480px}
     input[type=search]{
       flex:1;
       padding:12px;
@@ -657,6 +656,8 @@ backdrop-filter: blur(5px);
             <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">hydra -L users.txt -P passwords.txt ssh://&lt;IP&gt;</code><div class="cmd-desc">Brute-force SSH with username and password lists.</div></div></div>
             <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">hydra -L users.txt -p password123 ftp://&lt;IP&gt;</code><div class="cmd-desc">Password spray FTP with a user list and single password.</div></div></div>
             <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">hydra -C creds.txt http-post-form "&lt;target&gt;:&lt;form_data&gt;"</code><div class="cmd-desc">Brute-force a web login form from a credential file.</div></div></div>
+            <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">hydra -L lookup.txt -P rockyou.txt example.com http-post-form "/login.php:user=^USER^&pass=^PASS^:Login failed" -t 4 -f -V
+</code><div class="cmd-desc">Brute-force login with user/pass lists — 4 threads, stop on success.</div></div></div>
         </div></details>
         
         <details class="tool"><summary>Arpspoof <span class="meta">ARP poisoning (MITM)</span></summary><div class="content">
@@ -931,6 +932,70 @@ backdrop-filter: blur(5px);
             <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">wifite --wps --wpa</code><div class="cmd-desc">Only targets networks with WPS enabled or WPA handshakes.</div></div></div>
         </div></details>
 
+        <!-- For authorized, legal penetration tests / labs only. Do not run these on systems you do not own or have explicit permission to test. -->
+
+<h3 class="attack-title">Privilege Escalation</h3>
+
+<details class="tool"><summary>GTFOBins / LOLBAS <span class="meta">Misconfigured binaries</span></summary><div class="content">
+  <div class="tool-purpose">Tool purpose: Find and exploit common binaries and scripts with misconfigurations to escalate privileges.</div>
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">find / -perm -u=s -type f 2>/dev/null</code><div class="cmd-desc">Find all files with the **SUID** bit set to identify potential privilege escalation vectors on Linux.</div></div></div>
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo -l</code><div class="cmd-desc">List all commands the current user can run with sudo, often leading to a root shell.</div></div></div>
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">getcap -r / 2>/dev/null</code><div class="cmd-desc">Find files with special capabilities that can be abused for privilege escalation.</div></div></div>
+</div></details>
+
+<details class="tool"><summary>Credential & Misconfiguration Tricks <span class="meta">Exploiting system files</span></summary><div class="content">
+  <div class="tool-purpose">Tool purpose: Use a variety of commands to find sensitive information and misconfigurations that lead to privilege escalation.</div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">cat /etc/passwd</code><div class="cmd-desc">Examine the file for user accounts with no passwords or unusual configurations.</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">cat /etc/shadow</code><div class="cmd-desc">Read the file to check for weak password hashes that can be cracked offline. (Requires elevated privileges.)</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">find / -type f -name id_rsa 2>/dev/null</code><div class="cmd-desc">Search for SSH private keys on the system, which can provide access to other users or hosts.</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">grep 'password' /var/www/html/config.php</code><div class="cmd-desc">Search for hardcoded credentials in application configuration files.</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">ls -la /var/backups</code><div class="cmd-desc">Check for readable backup files that may contain sensitive data or credentials.</div></div></div>
+
+  <!-- Integrated additional trick commands (3–5 added) -->
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">grep -RIn --binary-files=without-match 'password\|passwd\|secret' /etc /var/www 2>/dev/null</code><div class="cmd-desc">Recursively search common configuration and web directories for likely credential keywords — quick way to find leaked secrets in configs and app files.</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">ls -laA /home/*/.ssh 2>/dev/null</code><div class="cmd-desc">List SSH-related files and permissions in user home directories to find keys, authorized_keys, or misconfigured permissions.</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">strings /usr/bin/* 2>/dev/null | grep -Ei 'password|passwd|ssh|token|key'</code><div class="cmd-desc">Search binaries and scripts for readable strings that may include credentials, tokens, or hints (no guarantee but sometimes useful).</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">lsof -nP 2>/dev/null | grep -E 'deleted|/tmp|/var/tmp'</code><div class="cmd-desc">Find open file descriptors pointing to deleted or temporary files — sensitive data can remain accessible via file descriptors even after deletion.</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">find / -type f -name '*.bak' -o -name '*~' -o -name '*.old' 2>/dev/null</code><div class="cmd-desc">Locate backup or old copies of configuration files and scripts which may contain credentials or tokens left in plaintext.</div></div></div>
+
+</div></details>
+
+<details class="tool"><summary>Sudo & Policy Checks <span class="meta">Sudo misconfigs & environment</span></summary><div class="content">
+  <div class="tool-purpose">Tool purpose: Check sudoers, environment, and common sudo misconfigurations that allow privilege escalation.</div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo -l -U $(whoami)</code><div class="cmd-desc">Explicitly list sudo privileges for the current user (shows NOPASSWD entries and allowed commands).</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">getent group sudo && getent group wheel</code><div class="cmd-desc">Check which users belong to common admin groups (sudo/wheel).</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">env | sort</code><div class="cmd-desc">Inspect environment variables that can sometimes be abused by misconfigured sudo rules (PATH, LD_PRELOAD, etc.).</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">sudo -V</code><div class="cmd-desc">Show sudo version and build options — useful to identify older vulnerable versions or specific behavior.</div></div></div>
+
+</div></details>
+
+<details class="tool"><summary>Cron Jobs, Services & Scheduled Tasks <span class="meta">Persistence & mis-scheduled tasks</span></summary><div class="content">
+  <div class="tool-purpose">Tool purpose: Find scheduled tasks, world-writable scripts, and service misconfigurations that enable privilege escalation or persistence.</div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">ls -la /etc/cron* /var/spool/cron /etc/cron.d 2>/dev/null</code><div class="cmd-desc">List cron locations to find scripts or jobs run as root that reference writable files.</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">find / -perm -2 -type f -exec ls -la {} \; 2>/dev/null | head -n 50</code><div class="cmd-desc">Find world-writable files (and view permissions) — writable scripts run by root are a common escalation vector.</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">systemctl list-unit-files --type=service --state=enabled</code><div class="cmd-desc">List enabled services — check service files for ExecStart pointing to writable paths or scripts.</div></div></div>
+
+  <div class="cmd-block"><button class="copy-left">Copy</button><div class="cmd-and-desc"><code class="cmd">ps aux --no-heading --sort=start_time | head -n 20</code><div class="cmd-desc">Spot recently started processes that may reveal scheduled tasks, wrappers, or injected processes.</div></div></div>
+
+</div></details>
+
+
         <h3 class="attack-title">Password Spraying</h3>
         <details class="tool"><summary>Medusa <span class="meta">Password spraying tool</span></summary><div class="content">
             <div class="tool-purpose">Tool purpose: A brute-force password spraying tool that can be used to test for a few common passwords against many accounts.</div>
@@ -980,7 +1045,7 @@ backdrop-filter: blur(5px);
 
     </main>
     
-   <footer>
+    <footer>
     <p>Developed by Shaikh Kaif
         <a href="https://www.linkedin.com/in/kaifmohamad923/" target="_blank" rel="noopener noreferrer">LinkedIn</a> |
         <a href="https://github.com/kaifmohamad923" target="_blank" rel="noopener noreferrer">GitHub</a> |
