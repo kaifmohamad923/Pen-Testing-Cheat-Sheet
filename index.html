@@ -1255,7 +1255,56 @@
                 </div>
             </details>
             
-           
+        <div id="notes-subsections">
+                <details class="tool" id="boot2root-note">
+    <summary class="note-summary">Boot2Root Methodology </summary>
+    <div class="note-content">
+
+        <h3>Phase 1: Reconnaissance & Enumeration 🔍</h3>
+        <div class="cmd-block">
+<pre>
+This is the most #important# phase. Find all open ports and services.
+    Find All Ports:   nmap -p- <TARGET_IP>
+    Get Service Details:   nmap -sV -sC -p<ports> <TARGET_IP>
+    Enumerate Web:   Use gobuster to find directories. Check robots.txt & page source.
+    Enumerate SMB:   List shares with smbclient -L //<TARGET_IP>/.
+</pre>
+        </div>
+
+        <h3>Phase 2: Gaining Initial Access 🎯</h3>
+        <div class="cmd-block">
+<pre>
+Use info from Phase 1 to get a shell.
+    Footholds:   Look for Public Exploits (searchsploi), Web Flaws, or Weak Credentials.
+    Reverse Shell:
+    1. Listener (You):   nc -lvnp 4444
+    2. Payload (Target):   Execute a one-liner from RevShells.com.
+</pre>
+        </div>
+
+        <h3>Phase 3: Privilege Escalation 🚀</h3>
+        <div class="cmd-block">
+<pre>
+You're in as a normal user. Find a way to become root
+    Checklist:  
+      sudo -l (Always check first!)
+      Find SUID files, then check GTFOBins: find / -perm -u=s -type f 2>/dev/null
+      Check for hijackable Cron Jobs: cat /etc/crontab
+    Automate:   Use linpeas.sh to find vectors automatically.
+</pre>
+        </div>
+
+        <h3>Phase 4: Post-Exploitation 🚩</h3>
+        <div class="cmd-block">
+<pre>
+You are  root Find the flags.
+    User Flag:   cat /home/<username>/user.txt
+    Root Flag:   cat /root/root.txt
+</pre>
+        </div>
+
+    </div>
+</details>
         </div>
       </section>
     </main>
