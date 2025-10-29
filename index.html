@@ -677,7 +677,7 @@
 
         <details class="tool"><summary>Nmap <span class="meta">Service version & scripts</span></summary><div class="content">
             <div class="tool-purpose">Tool purpose: Run deeper scans to identify service versions and check for known vulnerabilities using scripts.</div>
-            <div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc"><code class="cmd">nmap -sV -sC -p- &lt;target&gt;</code><div class="cmd-desc">Comprehensive scan for service versions and default scripts on all ports.</div></div></div>
+            <div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc"><code class="cmd">nmap -sV -p 443 --script "vuln"  &lt;target&gt;</code><div class="cmd-desc">It automatically launches Nmap's vulnerability-scanning scripts (NSE) against the target to find exploitable security flaws on the target can find CVE.</div></div></div>
         </div></details>
         
         <details class="tool"><summary>Masscan <span class="meta">Fast port scanning</span></summary><div class="content">
