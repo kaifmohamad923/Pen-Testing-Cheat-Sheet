@@ -490,6 +490,145 @@
         
         <h3 class="attack-title" style="margin-top: 0;">Tools</h3>
 
+
+        <details class="tool"><summary>Recon-ng <span class="meta">OSINT + Contact Intelligence</span></summary><div class="content">
+
+<div class="tool-purpose">Tool purpose: Perform Open Source Intelligence (OSINT) and gather domains, emails, contacts, and related intelligence using modular reconnaissance.</div>
+
+<!-- ================= CORE COMMANDS ================= -->
+
+<div class="tool-purpose" style="margin-top: 10px;">Core Framework Commands:</div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">recon-ng</code>
+<div class="cmd-desc">Start Recon-ng framework.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">workspaces create myproject</code>
+<div class="cmd-desc">Create a new workspace.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">workspaces select myproject</code>
+<div class="cmd-desc">Switch to workspace.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">modules search domain</code>
+<div class="cmd-desc">Search modules related to domains.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">modules load recon/domains-hosts/google_site_web</code>
+<div class="cmd-desc">Load module to gather subdomains.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">options list</code>
+<div class="cmd-desc">View module options.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">options set SOURCE example.com</code>
+<div class="cmd-desc">Set target domain.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">run</code>
+<div class="cmd-desc">Execute module.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">show hosts</code>
+<div class="cmd-desc">Display discovered hosts.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">back</code>
+<div class="cmd-desc">Unload module.</div>
+</div></div>
+
+<!-- ================= CONTACT COMMANDS ================= -->
+
+<div class="tool-purpose" style="margin-top: 16px;">Contact & Email Intelligence:</div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">modules search contacts</code>
+<div class="cmd-desc">Search contact-related modules.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">modules load recon/domains-contacts/whois_pocs</code>
+<div class="cmd-desc">Extract emails from WHOIS.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">modules load recon/profiles-contacts/github_users</code>
+<div class="cmd-desc">Find emails from GitHub profiles.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">modules load recon/domains-contacts/hunter_io</code>
+<div class="cmd-desc">Collect company emails (API required).</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">modules load recon/domains-contacts/builtwith_contacts</code>
+<div class="cmd-desc">Get contacts from BuiltWith data.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">modules load recon/contacts-credentials/hibp_breach</code>
+<div class="cmd-desc">Check email breaches.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">modules load recon/contacts-credentials/hibp_paste</code>
+<div class="cmd-desc">Check paste leaks.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">options set API_KEY YOUR_API_KEY</code>
+<div class="cmd-desc">Set API key for modules.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">show contacts</code>
+<div class="cmd-desc">View collected contacts.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">show credentials</code>
+<div class="cmd-desc">View leaked credentials.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">show profiles</code>
+<div class="cmd-desc">View linked profiles.</div>
+</div></div>
+
+<!-- ================= EXTRA ================= -->
+
+<div class="tool-purpose" style="margin-top: 16px;">Extra Commands:</div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">db insert domains example.com</code>
+<div class="cmd-desc">Manually add domain.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">db insert contacts name="John Doe" email="john@example.com"</code>
+<div class="cmd-desc">Manually add contact.</div>
+</div></div>
+
+<div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc">
+<code class="cmd">marketplace install all</code>
+<div class="cmd-desc">Install all modules.</div>
+</div></div>
+
+</div></details>
+
         <details class="tool"><summary>Whois <span class="meta">Domain ownership info</span></summary><div class="content">
           <div class="tool-purpose">Tool purpose: Get ownership, registrar, IP/netblock details from WHOIS services.</div>
           <div class="cmd-block"><button class="copy-btn">Copy</button><div class="cmd-and-desc"><code class="cmd">whois domain.com</code><div class="cmd-desc">Get domain registrar, IP ranges.</div></div></div>
